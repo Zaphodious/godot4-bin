@@ -15,7 +15,7 @@ Unsupported
 
 To run Godot without any further configuration, run this command:
 
-```
+```bash
 nix run github:Damianu/godot4-bin
 ```
 
@@ -23,7 +23,7 @@ nix run github:Damianu/godot4-bin
 
 There are also two other options available to run Godot:
 
-```
+```bash
 nix run github:Damianu/godot4-bin#godot
 nix run github:Damianu/godot4-bin#godot-mono
 ```
@@ -34,7 +34,7 @@ Most importantly, using `\#godot-mono` will allow you to write in C#.
 
 Put this in your `flake.nix`, to install Godot for your user:
 
-```
+```nix
   inputs = {
     # ...
     godot-bin = {
@@ -59,7 +59,7 @@ Put this in your `flake.nix`, to install Godot for your user:
 
 Alternatively you can also install Godot system-wide like this:
 
-```
+```nix
   inputs = {
     # ...
     godot-bin = {
