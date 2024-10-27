@@ -1,78 +1,111 @@
-{ stdenv,
+{
+  stdenv,
   lib,
   autoPatchelfHook,
   makeWrapper,
   fetchurl,
   unzip,
-  udev,
-  alsaLib, libXcursor, libXinerama, libXrandr, libXrender, libX11, libXi,
-  libpulseaudio, libGL,
+  buildFHSUserEnv,
   godotDesktopFile,
   godotIconPNG,
   godotIconSVG,
-  godotManpage
+  godotManpage,
+
+  #
+  alsa-lib,
+  dbus,
+  fontconfig,
+  libGL,
+  libpulseaudio,
+  speechd,
+  udev,
+  vulkan-loader,
+  xorg,
+  libxkbcommon,
+  libdecor,
+  wayland,
+
+  version ? "4.3-stable",
+  versionHash ? "sha256-feVkRLEwsQr4TRnH4M9jz56ZN+5LqUNkw7fdEUJTyiE=",
+  arch ? "linux.x86_64",
 }:
 
-let
-  qualifier = "stable";
-in
-
 stdenv.mkDerivation rec {
-  pname = "godot-bin";
-  version = "3.5.1";
+    pname = "godot";
+    inherit version;
+    src = fetchurl {
+      url = "https://github.com/godotengine/godot-builds/releases/download/${version}/Godot_v${version}_${arch}.zip";
+      sha256 = versionHash;
+    };
 
-  src = fetchurl {
-    url = "https://downloads.tuxfamily.org/godotengine/${version}/Godot_v${version}-${qualifier}_x11.64.zip";
-    sha256 = "kl5HGjL2mjxWktfubJXan/l7bmZu562VmD8iO6rQ4H0=";
-  };
+    nativeBuildInputs = [
+      autoPatchelfHook
+      makeWrapper
+      unzip
+    ];
+    buildInputs = [
+      alsa-lib
+      libGL
+      vulkan-loader
+      #Xorg
+      xorg.libX11
+      xorg.libXcursor
+      xorg.libXext
+      xorg.libXfixes
+      xorg.libXi
+      xorg.libXinerama
+      xorg.libXrandr
+      xorg.libXrender
+      libxkbcommon
+      #Wayldnd
+      libdecor
+      wayland
+      #Dbus
+      dbus
+      dbus.lib
+      #Fontconfig
+      fontconfig
+      fontconfig.lib
+      #Pulseaudio
+      libpulseaudio
 
-  nativeBuildInputs = [autoPatchelfHook makeWrapper unzip];
+      #Speechd
+      speechd
 
-  buildInputs = [
-    udev
-    alsaLib
-    libXcursor
-    libXinerama
-    libXrandr
-    libXrender
-    libX11
-    libXi
-    libpulseaudio
-    libGL
-  ];
+      #udev
+      udev
 
-  libraries = lib.makeLibraryPath buildInputs;
 
-  unpackCmd = "unzip $curSrc -d source";
-  installPhase = ''
-    mkdir -p $out/bin
-    install -m 0755 Godot_v${version}-${qualifier}_x11.64 $out/bin/godot
+    ];
+    runtimeDependencies = buildInputs;
+    dontAutoPatchelf = false;
 
-    # Only create a desktop file, if the necessary variables are set
-    # these are set only, if one installs this program using flakes.
-    if [[ -f "${godotDesktopFile}" ]]; then
-      mkdir -p "$out/man/share/man/man6"
-      cp ${godotManpage} "$out/man/share/man/man6/"
+    unpackPhase = ''
+      mkdir source
+      unzip $src -d source
+    '';
+    installPhase = ''
+      mkdir -p $out/bin
+      install -m 0755 source/Godot_v${version}_${arch} $out/bin/godot
 
-      mkdir -p $out/share/{applications,icons/hicolor/scalable/apps}
-      cp ${godotDesktopFile} "$out/share/applications/org.godotengine.Godot.desktop"
-      cp ${godotIconSVG} "$out/share/icons/hicolor/scalable/apps/godot.svg"
-      cp ${godotIconPNG} "$out/share/icons/godot.png"
-      substituteInPlace "$out/share/applications/org.godotengine.Godot.desktop" \
-        --replace "Exec=godot" "Exec=$out/bin/godot"
-    fi
-  '';
+      # Only create a desktop file, if the necessary variables are set
+      # these are set only, if one installs this program using flakes.
+      if [[ -f "${godotDesktopFile}" ]]; then
+        mkdir -p "$out/man/share/man/man6"
+        cp ${godotManpage} "$out/man/share/man/man6/"
 
-  postFixup = ''
-    wrapProgram $out/bin/godot \
-      --set LD_LIBRARY_PATH ${libraries}
-  '';
-
-  meta = {
-    homepage    = "https://godotengine.org";
-    description = "Free and Open Source 2D and 3D game engine";
-    license     = lib.licenses.mit;
-    platforms   = [ "i686-linux" "x86_64-linux" ];
-    maintainers = [ lib.maintainers.twey ];
-  };
+        mkdir -p $out/share/{applications,icons/hicolor/scalable/apps}
+        cp ${godotDesktopFile} "$out/share/applications/org.godotengine.Godot.desktop"
+        cp ${godotIconSVG} "$out/share/icons/hicolor/scalable/apps/godot.svg"
+        cp ${godotIconPNG} "$out/share/icons/godot.png"
+        substituteInPlace "$out/share/applications/org.godotengine.Godot.desktop" \
+          --replace "Exec=godot" "Exec=$out/bin/godot"
+      fi
+    '';
+    
+    libraries = lib.makeLibraryPath buildInputs;
+    postFixup = ''
+      wrapProgram $out/bin/godot \
+        --set LD_LIBRARY_PATH ${libraries}
+    '';
 }

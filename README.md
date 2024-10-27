@@ -7,22 +7,7 @@
 
 ### Without Flakes ❄❌
 
-The simplest way to use these packages are to use the overlay. In your `configuration.nix`:
-  
-    let  
-      nixosGodot = fetchGit {
-        url = "https://github.com/sgillespie/nixos-godot-bin.git";
-      };
-    in
-  
-    nixpkgs.overlays = nixpkgs.overlays ++ [(import "${nixosGodot}/overlay.nix)"]
-
-    # <-- Snip -->
-    environment.systemPackages = with pkgs; [
-      godotBin
-      godotMonoBin
-      godotHeadlessBin
-    ]
+Unsupported
 
 ### With Flakes ❄✅
 
@@ -31,20 +16,19 @@ The simplest way to use these packages are to use the overlay. In your `configur
 To run Godot without any further configuration, run this command:
 
 ```
-nix run github:Quoteme/nixos-godot-bin
+nix run github:Damianu/godot4-bin
 ```
 
 ##### Running different Godot flavors
 
-There are also these other options available to run Godot:
+There are also two other options available to run Godot:
 
 ```
-nix run github:Quoteme/nixos-godot-bin\#godot
-nix run github:Quoteme/nixos-godot-bin\#godotHeadless
-nix run github:Quoteme/nixos-godot-bin\#godotMono
+nix run github:Damianu/godot4-bin#godot
+nix run github:Damianu/godot4-bin#godot-mono
 ```
 
-Most importantly, using `\#godotMono` will allow you to write in C#.
+Most importantly, using `\#godot-mono` will allow you to write in C#.
 
 #### Installing Godot using flakes system-wide
 
@@ -53,7 +37,10 @@ Put this in your `flake.nix`, to install Godot for your user:
 ```
   inputs = {
     # ...
-    godot.url = "github:Quoteme/nixos-godot-bin";
+    godot-bin = {
+      url = "github:QDamianu/godot4-bin";
+      inputs.nixpkgs.follows = "nixpkgs"; #Might prevent some OpenGL issues
+    };
     # ...
   };
 
@@ -63,9 +50,8 @@ Put this in your `flake.nix`, to install Godot for your user:
         ({ config, nixpkgs, ...}@inputs:
           users.users.YOURUSERNAME.packages = [
             # ...
-            inputs.godot.packages.x86_64-linux.godot # for godot without Mono / C#
-            inputs.godot.packages.x86_64-linux.godotHeadless # for godot headless
-            inputs.godot.packages.x86_64-linux.godotMono
+            inputs.godot-bin.packages.x86_64-linux.godot # for godot without Mono / C#
+            inputs.godot-bin.packages.x86_64-linux.godot-mono
           ]
         )
       ]
@@ -76,7 +62,10 @@ Alternatively you can also install Godot system-wide like this:
 ```
   inputs = {
     # ...
-    godot.url = "github:Quoteme/nixos-godot-bin";
+    godot-bin = {
+      url = "github:QDamianu/godot4-bin";
+      inputs.nixpkgs.follows = "nixpkgs"; #Might prevent some OpenGL issues
+    };
     # ...
   };
 
@@ -86,10 +75,22 @@ Alternatively you can also install Godot system-wide like this:
         ({ config, nixpkgs, ...}@inputs:
           environment.systemPackages = [
             # ...
-            inputs.godot.packages.x86_64-linux.godot # for godot without Mono / C#
-            inputs.godot.packages.x86_64-linux.godotHeadless # for godot headless
-            inputs.godot.packages.x86_64-linux.godotMono
+            inputs.godot-bin.packages.x86_64-linux.godot # for godot without Mono / C#
+            inputs.godot-bin.packages.x86_64-linux.godot-mono
           ]
         )
       ]
 ```
+
+#### Overriding version
+
+Version can be overriden via overrideAttrs via "version" and "versionHash" property
+
+Example version: "4.3-stable"
+
+# Why this fork
+
+- Provides option to override version(and versionHash)
+- nixpkgs currently doesnt provide godot4 with mono
+- Quick tests show it actually works ;)
+- Icon/Desktop/Man files pinned to actual commit link instead of master branch, so won't error when Godot repo gets updated.
