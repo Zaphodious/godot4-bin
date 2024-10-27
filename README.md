@@ -13,7 +13,7 @@ Unsupported
 
 #### Running Godot without installing it
 
-To run Godot without any further configuration, run this command:
+To run Godot(Mono version) without any further configuration, run this command:
 
 ```bash
 nix run github:Damianu/godot4-bin
@@ -28,7 +28,7 @@ nix run github:Damianu/godot4-bin#godot
 nix run github:Damianu/godot4-bin#godot-mono
 ```
 
-Most importantly, using `\#godot-mono` will allow you to write in C#.
+Most importantly, using `#godot-mono` will allow you to write in C#.
 
 #### Installing Godot using flakes system-wide
 
