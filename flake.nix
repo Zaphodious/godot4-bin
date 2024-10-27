@@ -23,29 +23,25 @@
     };
   };
 
-  outputs =
-    { nixpkgs, ... }@inputs:
-    let
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
-    in
-    rec {
-      packages.${system} = rec {
-        godot = pkgs.callPackage ./pkgs/godot {
-          godotDesktopFile = inputs.godot-desktop-file;
-          godotIconPNG = inputs.godot-icon-png;
-          godotIconSVG = inputs.godot-icon-svg;
-          godotManpage = inputs.godot-manpage;
-        };
-        godot-mono = pkgs.callPackage ./pkgs/godot/mono.nix {
-          godotDesktopFile = inputs.godot-desktop-file;
-          godotIconPNG = inputs.godot-icon-png;
-          godotIconSVG = inputs.godot-icon-svg;
-          godotManpage = inputs.godot-manpage;
-          godotBin = godot;
-        };
-        default = godot-mono;
+  outputs = {nixpkgs, ...} @ inputs: let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+  in rec {
+    packages.${system} = rec {
+      godot = pkgs.callPackage ./pkgs/godot {
+        godotDesktopFile = inputs.godot-desktop-file;
+        godotIconPNG = inputs.godot-icon-png;
+        godotIconSVG = inputs.godot-icon-svg;
+        godotManpage = inputs.godot-manpage;
       };
+      godot-mono = pkgs.callPackage ./pkgs/godot/mono.nix {
+        godotDesktopFile = inputs.godot-desktop-file;
+        godotIconPNG = inputs.godot-icon-png;
+        godotIconSVG = inputs.godot-icon-svg;
+        godotManpage = inputs.godot-manpage;
+        godotBin = godot;
+      };
+      default = godot-mono;
     };
-
+  };
 }
