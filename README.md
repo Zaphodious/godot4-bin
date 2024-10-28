@@ -38,7 +38,7 @@ Put this in your `flake.nix`, to install Godot for your user:
   inputs = {
     # ...
     godot-bin = {
-      url = "github:QDamianu/godot4-bin";
+      url = "github:Damianu/godot4-bin";
       inputs.nixpkgs.follows = "nixpkgs"; #Might prevent some OpenGL issues
     };
     # ...
@@ -63,7 +63,7 @@ Alternatively you can also install Godot system-wide like this:
   inputs = {
     # ...
     godot-bin = {
-      url = "github:QDamianu/godot4-bin";
+      url = "github:Damianu/godot4-bin";
       inputs.nixpkgs.follows = "nixpkgs"; #Might prevent some OpenGL issues
     };
     # ...
