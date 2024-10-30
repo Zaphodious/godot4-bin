@@ -12,6 +12,8 @@
   versionHash ? "sha256-7N881aYASmVowZlYHVi6aFqZBZJuUWd5BrdvvdnK01E=",
   arch ? "linux.x86_64",
   archWithUnderscore ? "linux_x86_64", # I have no comment on that..
+  dotnetPackage,
+  setDotnetRoot ? true,
 }:
 godotBin.overrideAttrs (oldAttrs: let
   godotName = "Godot_v${version}_mono_${arch}";
@@ -65,8 +67,15 @@ in rec {
     fi
   '';
 
-  postFixup = ''
-    wrapProgram $out/bin/godot-mono \
-      --set LD_LIBRARY_PATH ${libraries}
-  '';
+  postFixup =
+    if setDotnetRoot
+    then ''
+      wrapProgram $out/bin/godot-mono \
+        --set LD_LIBRARY_PATH ${libraries} \
+        --set DOTNET_ROOT ${dotnetPackage}
+    ''
+    else ''
+      wrapProgram $out/bin/godot-mono
+        --set LD_LIBRARY_PATH ${libraries}
+    '';
 })

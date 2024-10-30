@@ -82,13 +82,55 @@ Alternatively you can also install Godot system-wide like this:
       ]
 ```
 
-#### Overriding version
+## Customization
 
-Version can be overriden via overrideAttrs via "version" and "versionHash" property
+#### Different .NET version
 
-Example version: "4.3-stable"
+To customize the .NET version used by Godot, you can override the `dotnetPackage` attribute. By default, the package uses .NET 8 (Latest LTS).
 
-# Why this fork
+```nix
+  environment.systemPackages = [
+    # ...
+    (inputs.godot-bin.packages.x86_64-linux.godot-mono.override {
+      dotnetPackage = pkgs.dotnet-sdk_6; # Specify your desired .NET version here
+    })
+  ];
+```
+
+Replace `inputs.nixpkgs.pkgs.dotnet-sdk_6` with the desired .NET package.
+
+#### System .NET packages
+
+To use the system-installed .NET packages instead, you can set the `setDotnetRoot` attribute to `false`. This will prevent setting DOTNET_ROOT by the wrapper.
+
+```nix
+  environment.systemPackages = [
+    # ...
+    (inputs.godot-bin.packages.x86_64-linux.godot-mono.override {
+      setDotnetRoot = false;
+    })
+  ];
+```
+
+Ensure that the appropriate .NET version is installed on your system.
+
+#### Overriding engine version
+
+To override the engine version, you can use the `version` and `versionHash` properties. Here is an example:
+
+```nix
+  environment.systemPackages = [
+    # ...
+    (inputs.godot-bin.packages.x86_64-linux.godot-mono.override {
+      version = "4.3-stable"; # Specify the desired Godot version here
+      versionHash = "abcdef1234567890"; # Specify the corresponding version hash here
+    })
+  ];
+```
+
+Replace `"4.3-stable"` and `"abcdef1234567890"` with the desired version and its corresponding hash.
+
+## Why this fork
 
 - Provides option to override version(and versionHash)
 - nixpkgs currently doesnt provide godot4 with mono

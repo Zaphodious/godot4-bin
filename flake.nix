@@ -26,7 +26,7 @@
   outputs = {nixpkgs, ...} @ inputs: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
-  in rec {
+  in {
     packages.${system} = rec {
       godot = pkgs.callPackage ./pkgs/godot {
         godotDesktopFile = inputs.godot-desktop-file;
@@ -39,6 +39,7 @@
         godotIconPNG = inputs.godot-icon-png;
         godotIconSVG = inputs.godot-icon-svg;
         godotManpage = inputs.godot-manpage;
+        dotnetPackage = pkgs.dotnetCorePackages.sdk_8_0;
         godotBin = godot;
       };
       default = godot-mono;
