@@ -13,7 +13,7 @@
   arch ? "linux.x86_64",
   archWithUnderscore ? "linux_x86_64", # I have no comment on that..
   dotnetPackage,
-  setDotnetRoot ? true,
+  setDotnetRoot ? false,
 }:
 godotBin.overrideAttrs (oldAttrs: let
   godotName = "Godot_v${version}_mono_${arch}";
