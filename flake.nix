@@ -39,7 +39,7 @@
         godotIconPNG = inputs.godot-icon-png;
         godotIconSVG = inputs.godot-icon-svg;
         godotManpage = inputs.godot-manpage;
-        dotnetPackage = pkgs.dotnetCorePackages.sdk_8_0;
+        dotnetPackage = pkgs.dotnetCorePackages.sdk_8_0_3xx;
         godotBin = godot;
       };
       default = godot-mono;
