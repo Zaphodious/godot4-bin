@@ -31,7 +31,6 @@ in rec {
     ++ [
       zlib
       msbuild
-      dotnetPackage
     ];
 
   libraries = lib.makeLibraryPath buildInputs;
@@ -51,6 +50,10 @@ in rec {
     install -m 0755 source/${godotName} $out/opt/godot-mono/${godotName}
     cp -r source/GodotSharp $out/opt/godot-mono
 
+
+    # Ensure that dotnet is actually available to Godot
+    echo "${dotnetPackage}" >> $out/bin/runtime-deps.txt
+
     ln -s $out/opt/godot-mono/${godotName} $out/bin/godot-mono
 
     # Only create a desktop file, if the necessary variables are set
@@ -58,6 +61,7 @@ in rec {
     if [[ -f "${godotDesktopFile}" ]]; then
       mkdir -p "$out/man/share/man/man6"
       cp ${godotManpage} "$out/man/share/man/man6/"
+
 
       mkdir -p $out/share/{applications,icons/hicolor/scalable/apps}
       cp ${godotDesktopFile} "$out/share/applications/org.godotengine.Godot-Mono.desktop"
