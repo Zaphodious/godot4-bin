@@ -31,6 +31,7 @@ in rec {
     ++ [
       zlib
       msbuild
+      dotnetPackage
     ];
 
   libraries = lib.makeLibraryPath buildInputs;
